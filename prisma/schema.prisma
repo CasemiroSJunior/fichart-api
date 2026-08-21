@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../docs/ERD.md"
+}
+
+enum Size {
+  TINY
+  SMALL
+  MEDIUM
+  LARGE
+  HUGE
+  GARGANTUAN
+}
+
+model Race {
+  id    String @id @default(uuid(7))
+  name  String @unique
+  speed Int
+  size  Size   @default(MEDIUM)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  subraces   Subrace[]
+  languages  Language[]
+  characters Character[]
+
+  @@map("races")
+}
+
+model Subrace {
+  id   String @id @default(uuid(7))
+  name String
+
+  raceId String @map("race_id")
+  race   Race   @relation(fields: [raceId], references: [id], onDelete: Cascade)
+
+  characters Character[]
+
+  @@unique([raceId, name])
+  @@map("subraces")
+}
+
+model CharacterClass {
+  id     String @id @default(uuid(7))
+  name   String @unique
+  hitDie Int    @map("hit_die")
+
+  characters Character[]
+
+  @@map("character_classes")
+}
+
+model Background {
+  id          String  @id @default(uuid(7))
+  name        String  @unique
+  description String?
+
+  characters Character[]
+
+  @@map("backgrounds")
+}
+
+model Language {
+  id   String @id @default(uuid(7))
+  name String @unique
+
+  races      Race[]
+  characters Character[]
+
+  @@map("languages")
+}
+
+model Character {
+  id    String @id @default(uuid(7))
+  name  String
+  level Int    @default(1)
+
+  strength     Int @default(10)
+  dexterity    Int @default(10)
+  constitution Int @default(10)
+  intelligence Int @default(10)
+  wisdom       Int @default(10)
+  charisma     Int @default(10)
+
+  raceId String @map("race_id")
+  race   Race   @relation(fields: [raceId], references: [id])
+
+  subraceId String?  @map("subrace_id")
+  subrace   Subrace? @relation(fields: [subraceId], references: [id])
+
+  characterClassId String         @map("character_class_id")
+  characterClass   CharacterClass @relation(fields: [characterClassId], references: [id])
+
+  backgroundId String     @map("background_id")
+  background   Background @relation(fields: [backgroundId], references: [id])
+
+  languages Language[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([raceId])
+  @@index([characterClassId])
+  @@index([backgroundId])
+  @@map("characters")
+}
