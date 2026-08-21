@@ -1,0 +1,37 @@
+{
+	"name": "api-fichart",
+	"version": "1.0.0",
+	"description": "",
+	"main": "dist/server.js",
+	"scripts": {
+		"dev": "tsx watch src/server.ts",
+		"build": "tsc",
+		"start": "node dist/server.js",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome lint .",
+		"format": "biome format --write .",
+		"fix": "biome check --write .",
+		"verify": "npm run typecheck && npm run lint",
+		"db:migrate": "prisma migrate dev",
+		"db:studio": "prisma studio",
+		"db:generate": "prisma generate",
+		"db:reset": "prisma migrate reset"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"type": "module",
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.10",
+		"@types/node": "^26.2.0",
+		"dotenv": "^17.4.2",
+		"prisma": "^7.9.1",
+		"prisma-erd-generator": "^2.5.0",
+		"tsx": "^4.23.12",
+		"typescript": "^7.0.2"
+	},
+	"dependencies": {
+		"@prisma/client": "^7.9.1",
+		"fastify": "^5.12.1"
+	}
+}
