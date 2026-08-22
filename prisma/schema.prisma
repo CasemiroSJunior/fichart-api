@@ -26,6 +26,14 @@ enum Size {
   GARGANTUAN
 }
 
+enum Status {
+  PENDING
+  PAID
+  EXPIRED
+  CANCELLED
+  REFUNDED
+}
+
 model Race {
   id    String @id @default(uuid(7))
   name  String @unique
@@ -97,6 +105,9 @@ model Character {
   wisdom       Int @default(10)
   charisma     Int @default(10)
 
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
   raceId String @map("race_id")
   race   Race   @relation(fields: [raceId], references: [id])
 
@@ -111,11 +122,41 @@ model Character {
 
   languages Language[]
 
+  deleted   Boolean  @default(false)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([raceId])
   @@index([characterClassId])
   @@index([backgroundId])
+  @@index([userId])
   @@map("characters")
+}
+
+model User {
+  id       String @id @default(uuid(7))
+  name     String
+  email    String
+  password String
+
+  premiumActive Boolean   @default(false) @map("premium_active")
+  premiumDate   DateTime? @map("premium_date")
+
+  //Adicionei o deleted para manter informação. Não apagaremos as fichas nem usuários, apenas iremos inativá-los.
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  characters Character[]
+  payments   Payments[]
+}
+
+model Payments {
+  id String @id @default(uuid(7))
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  externalPayment String @map("external_payment")
+  paymentStatus   Status @default(PENDING) @map("payment_status")
 }
