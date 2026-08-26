@@ -32,6 +32,9 @@
   - Added the required column `updated_at` to the `subraces` table without a default value. This is not possible if the table is not empty.
 
 */
+-- Create Extension Citext
+CREATE EXTENSION IF NOT EXISTS citext;
+
 -- CreateEnum
 CREATE TYPE "Ability" AS ENUM ('STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA');
 
